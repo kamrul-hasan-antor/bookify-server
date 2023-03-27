@@ -20,6 +20,7 @@ async function run() {
   try {
     const userCollection = client.db("bookify").collection("users");
     const hotelCollection = client.db("bookify").collection("hotels");
+    const roomCollection = client.db("bookify").collection("rooms");
 
     // Add Users
     app.post("/addUsers", async (req, res) => {
@@ -58,6 +59,12 @@ async function run() {
         .toArray();
 
       res.send(hotelName);
+    });
+
+    app.post("/addRooms", async (req, res) => {
+      const rooms = req.body;
+      const result = await roomCollection.insertOne(rooms);
+      res.send(result);
     });
   } finally {
   }
