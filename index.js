@@ -61,10 +61,27 @@ async function run() {
       res.send(hotelName);
     });
 
+    // get rooms price, id, discount
+    app.get("/roomPrice", async (req, res) => {
+      const hotelName = await roomCollection
+        .find({})
+        .project({ hotleId: 1, rackRate: 1, discount: 1 })
+        .toArray();
+      res.send(hotelName);
+    });
+
+    // Add rooms
     app.post("/addRooms", async (req, res) => {
       const rooms = req.body;
       const result = await roomCollection.insertOne(rooms);
       res.send(result);
+    });
+
+    // Get all rooms
+    app.get("/rooms", async (req, res) => {
+      const query = {};
+      const rooms = await roomCollection.find(query).toArray();
+      res.send(rooms);
     });
   } finally {
   }
