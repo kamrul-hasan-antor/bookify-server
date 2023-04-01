@@ -61,6 +61,22 @@ async function run() {
       res.send(hotelName);
     });
 
+    // get hotels info by id
+    app.get("/hotels/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const hotel = await hotelCollection.find(query).toArray();
+      res.send(hotel);
+    });
+
+    // get rooms by hotel Id
+    app.get("/room/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { hotleId: id };
+      const room = await roomCollection.find(query).toArray();
+      res.send(room);
+    });
+
     // get rooms price, id, discount
     app.get("/roomPrice", async (req, res) => {
       const hotelName = await roomCollection
