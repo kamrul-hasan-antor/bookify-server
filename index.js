@@ -55,7 +55,7 @@ async function run() {
     app.get("/hotelName", async (req, res) => {
       const hotelName = await hotelCollection
         .find({})
-        .project({ hotelName: 1 })
+        .project({ hotelName: 1, address: 1, upazila: 1 })
         .toArray();
 
       res.send(hotelName);
