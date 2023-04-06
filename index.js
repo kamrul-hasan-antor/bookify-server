@@ -84,12 +84,30 @@ async function run() {
       res.send(rooms);
     });
 
+    // Get 4 luxurias rooms
+    app.get("/luxuriasRooms", async (req, res) => {
+      const query = {};
+      const allRooms = await roomCollection.find(query).toArray();
+      const rooms = allRooms
+        .sort((a, b) => b.rackRate - a.rackRate)
+        .slice(0, 5);
+      res.send(rooms);
+    });
+
     // get rooms by hotel Id
     app.get("/room/:id", async (req, res) => {
       const id = req.params.id;
       const query = { hotleId: id };
       const room = await roomCollection.find(query).toArray();
       res.send(room);
+    });
+
+    // get rooms by room Id
+    app.get("/editRoom/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const room = await roomCollection.find(query).toArray();
+      res.send(room[0]);
     });
 
     // get rooms price, id, discount
@@ -123,7 +141,6 @@ async function run() {
     });
 
     // get user booking info
-
     app.get("/myBooking", async (req, res) => {
       let query = {};
       if (req.query.email) {
