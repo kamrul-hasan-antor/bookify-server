@@ -21,6 +21,7 @@ async function run() {
     const userCollection = client.db("bookify").collection("users");
     const hotelCollection = client.db("bookify").collection("hotels");
     const roomCollection = client.db("bookify").collection("rooms");
+    const bookingCollection = client.db("bookify").collection("bookings");
 
     // Add Users
     app.post("/addUsers", async (req, res) => {
@@ -51,7 +52,7 @@ async function run() {
       res.send(hotels);
     });
 
-    // get hotels name and id
+    // get hotels name , address, and id
     app.get("/hotelName", async (req, res) => {
       const hotelName = await hotelCollection
         .find({})
@@ -69,23 +70,6 @@ async function run() {
       res.send(hotel);
     });
 
-    // get rooms by hotel Id
-    app.get("/room/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { hotleId: id };
-      const room = await roomCollection.find(query).toArray();
-      res.send(room);
-    });
-
-    // get rooms price, id, discount
-    app.get("/roomPrice", async (req, res) => {
-      const hotelName = await roomCollection
-        .find({})
-        .project({ hotleId: 1, rackRate: 1, discount: 1 })
-        .toArray();
-      res.send(hotelName);
-    });
-
     // Add rooms
     app.post("/addRooms", async (req, res) => {
       const rooms = req.body;
@@ -98,6 +82,55 @@ async function run() {
       const query = {};
       const rooms = await roomCollection.find(query).toArray();
       res.send(rooms);
+    });
+
+    // get rooms by hotel Id
+    app.get("/room/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { hotleId: id };
+      const room = await roomCollection.find(query).toArray();
+      res.send(room);
+    });
+
+    // get rooms price, id, discount
+    app.get("/roomPrice", async (req, res) => {
+      const allRoom = await roomCollection
+        .find({})
+        .project({ hotleId: 1, rackRate: 1, discount: 1 })
+        .toArray();
+
+      const cheapestHotels = allRoom
+        .sort((a, b) => a.rackRate - b.rackRate)
+        .filter((obj, index, self) => {
+          return index === self.findIndex((t) => t.hotleId === obj.hotleId);
+        });
+
+      res.send(cheapestHotels);
+    });
+
+    // adding booking info
+    app.post("/addBooking", async (req, res) => {
+      const booking = req.body;
+      const addBooking = await bookingCollection.insertOne(booking);
+      res.send(addBooking);
+    });
+
+    // get all booking info
+    app.get("/allBooking", async (req, res) => {
+      const query = {};
+      const allBooking = await bookingCollection.find(query).toArray();
+      res.send(allBooking);
+    });
+
+    // get user booking info
+
+    app.get("/myBooking", async (req, res) => {
+      let query = {};
+      if (req.query.email) {
+        query = { userEmail: req.query.email };
+      }
+      const myBooking = await bookingCollection.find(query).toArray();
+      res.send(myBooking);
     });
   } finally {
   }
