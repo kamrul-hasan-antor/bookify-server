@@ -110,6 +110,34 @@ async function run() {
       res.send(room[0]);
     });
 
+    app.put("/updateRoom/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const {
+        complimentary,
+        discount,
+        facilities,
+        maxGuest,
+        rackRate,
+        roomName,
+        totalRoom,
+      } = req.body;
+      const option = { upsert: true };
+      const updateRoom = {
+        $set: {
+          complimentary,
+          discount,
+          facilities,
+          maxGuest,
+          rackRate,
+          roomName,
+          totalRoom,
+        },
+      };
+      const result = await roomCollection.updateOne(query, updateRoom, option);
+      res.send(result);
+    });
+
     // get rooms price, id, discount
     app.get("/roomPrice", async (req, res) => {
       const allRoom = await roomCollection
