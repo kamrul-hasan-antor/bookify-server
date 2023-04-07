@@ -70,6 +70,25 @@ async function run() {
       res.send(hotel);
     });
 
+    // update hotel
+    app.put("/updateHotel/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const option = { upsert: true };
+      const updateHotel = {
+        $set: {
+          ...req.body,
+        },
+      };
+
+      const result = await hotelCollection.updateOne(
+        query,
+        updateHotel,
+        option
+      );
+      res.send(result);
+    });
+
     // Add rooms
     app.post("/addRooms", async (req, res) => {
       const rooms = req.body;
@@ -110,6 +129,7 @@ async function run() {
       res.send(room[0]);
     });
 
+    // update rooms
     app.put("/updateRoom/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
