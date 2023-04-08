@@ -80,13 +80,22 @@ async function run() {
           ...req.body,
         },
       };
-
       const result = await hotelCollection.updateOne(
         query,
         updateHotel,
         option
       );
       res.send(result);
+    });
+
+    // delete hotel by id hotleId
+    app.delete("/deleteHotel/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const hotel = await hotelCollection.deleteOne(query);
+      const query2 = { hotleId: id };
+      const room = await roomCollection.deleteMany(query2);
+      res.send(hotel);
     });
 
     // Add rooms
@@ -127,6 +136,14 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const room = await roomCollection.find(query).toArray();
       res.send(room[0]);
+    });
+
+    // delete room by id
+    app.delete("/deleteRoom/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const hotel = await roomCollection.deleteOne(query);
+      res.send(hotel);
     });
 
     // update rooms
